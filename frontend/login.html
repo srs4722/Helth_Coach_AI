@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Coach AI - Login / Sign Up</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        body.dark-mode {
+            background: linear-gradient(135deg, #1c2526, #2e3b3e);
+            color: #e0e0e0;
+        }
+
+        .navbar {
+            display: none; /* Initially hide the navbar */
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: #ffffff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
+
+        #logo1-section {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        #main-logo1 {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+            transform: scale(5.5);
+            transform-origin: left center;
+            margin-top: 20px;
+            margin-left: -75px;
+        }
+
+        #main-logo {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+            transform: scale(7.5);
+            transform-origin: center center;  /* Centers scaling of image */
+            margin-top: 0;                  /* Reset any top margin */
+            margin-left: 0;                 /* Reset any left margin */
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #0288d1;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #01579b;
+        }
+        
+        .hamburger {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #0288d1;
+        }
+
+        .login-container {
+            background: linear-gradient(135deg, #ffffff, #e0f7fa);
+            border-radius: 15px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-top: 5rem;
+        }
+
+        body.dark-mode .login-container {
+            background: linear-gradient(135deg, #2e3b3e, #3a4a4d);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo-img {
+            width: 100px;
+            display: block;
+            margin: 0 auto 1rem;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            margin: 1rem 0;
+            border-bottom: 2px solid #0288d1;
+        }
+
+        body.dark-mode .tabs {
+            border-color: #4fc3f7;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 0.75rem;
+            cursor: pointer;
+            text-align: center;
+            color: #0288d1;
+            transition: color 0.3s;
+            font-size: 1rem;
+        }
+        body.dark-mode .tab {
+            color: #4fc3f7;
+        }
+        .tab.active {
+            font-weight: bold;
+            color: #01579b;
+        }
+        body.dark-mode .tab.active {
+            color: #81d4fa;
+        }
+        form {
+            display: none;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        form.active {
+            display: flex;
+        }
+        input {
+            padding: 0.75rem;
+            border: 2px solid #0288d1;
+            border-radius: 5px;
+            font-size: 1rem;
+            background: #fff;
+            color: #333;
+            width: 100%;
+        }
+        body.dark-mode input {
+            background: #3a4a4d;
+            color: #e0e0e0;
+            border-color: #4fc3f7;
+        }
+        button {
+            padding: 0.75rem;
+            border: none;
+            background: linear-gradient(135deg, #0288d1, #4fc3f7);
+            color: #ffffff;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 1rem;
+            touch-action: manipulation;
+            min-height: 44px;
+        }
+        body.dark-mode button {
+            background: linear-gradient(135deg, #4fc3f7, #81d4fa);
+            color: #1c2526;
+        }
+        button:hover {
+            background: linear-gradient(135deg, #01579b, #0288d1);
+        }
+        body.dark-mode button:hover {
+            background: linear-gradient(135deg, #81d4fa, #4fc3f7);
+        }
+        .google-login {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border: 2px solid #4285f4;
+            background: #fff;
+            color: #4285f4;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            min-height: 44px;
+        }
+        body.dark-mode .google-login {
+            background: #3a4a4d;
+            border-color: #4285f4;
+            color: #4285f4;
+        }
+        .google-login:hover {
+            background: #4285f4;
+            color: #fff;
+        }
+        body.dark-mode .google-login:hover {
+            background: #4285f4;
+            color: #fff;
+        }
+        .google-account {
+            display: none;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            border: 2px solid #4285f4;
+            border-radius: 5px;
+            background: #fff;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        body.dark-mode .google-account {
+            background: #3a4a4d;
+            color: #e0e0e0;
+        }
+        .google-account:hover {
+            background: #e0f7fa;
+        }
+        body.dark-mode .google-account:hover {
+            background: #4fc3f7;
+            color: #1c2526;
+        }
+        @media (max-width: 768px) {
+            nav {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 4rem;
+                right: 1rem;
+                background: #ffffff;
+                padding: 1rem;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+            nav.active {
+                display: flex;
+            }
+            .hamburger {
+                display: block;
+            }
+            .login-container {
+                padding: 1.5rem;
+                margin-top: 6rem;
+            }
+            .tab {
+                font-size: 0.9rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .login-container {
+                max-width: 90%;
+                padding: 1rem;
+            }
+            .logo span {
+                font-size: 1.2rem;
+            }
+            .navbar {
+                padding: 0.75rem 1rem;
+            }
+            input, button {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="hamburger" id="hamburger">
+            <i class="fas fa-bars"></i>
+        </div>
+        <nav id="nav-menu">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="food-log.html">Food Log</a>
+            <a href="workouts.html">Workouts</a>
+            <a href="chat.html">AI Coach</a>
+            <a href="profile.html">Profile</a>
+            <a href="#" id="logoutBtn">Logout</a>
+        </nav>
+    </header>
+
+    <div class="login-container">
+        <div class="logo" id="logo-section">
+            <img src="assets/images/LOGO.png" alt="Health Coach AI Logo" id="main-logo">
+        </div>    
+        <h2>Welcome to Health Coach AI</h2>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('login')" aria-label="Switch to login tab">Login</div>
+            <div class="tab" onclick="switchTab('register')" aria-label="Switch to sign up tab">Sign Up</div>
+        </div>
+
+        <form id="loginForm" class="active">
+            <input type="email" id="email" placeholder="Email" required aria-label="Email input" />
+            <input type="password" id="password" placeholder="Password" required aria-label="Password input" />
+            <button type="submit" aria-label="Login">Login</button>
+            <button type="button" class="google-login" id="googleLoginBtn" aria-label="Continue with Google">
+                <i class="fab fa-google"></i> Continue with Google
+            </button>
+            <div id="googleAccounts"></div>
+        </form>
+
+        <form id="registerForm">
+            <input type="text" id="username" placeholder="Username" required aria-label="Username input" />
+            <input type="email" id="registerEmail" placeholder="Email" required aria-label="Email input for registration" />
+            <input type="password" id="registerPassword" placeholder="Password" required aria-label="Password input for registration" />
+            <button type="submit" aria-label="Sign Up">Sign Up</button>
+            <button type="button" class="google-login" id="googleLoginBtnRegister" aria-label="Continue with Google for registration">
+                <i class="fab fa-google"></i> Continue with Google
+            </button>
+            <div id="googleAccountsRegister"></div>
+        </form>
+    </div>
+
+    <script>
+        // Hamburger menu toggle
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('nav-menu');
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+
+        // Get redirect parameter from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirect = urlParams.get('redirect') || 'dashboard';
+
+        // Switch between login and signup tabs
+        function switchTab(tab) {
+            const loginTab = document.querySelector('.tab:nth-child(1)');
+            const registerTab = document.querySelector('.tab:nth-child(2)');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+
+            if (tab === 'login') {
+                loginTab.classList.add('active');
+                registerTab.classList.remove('active');
+                loginForm.classList.add('active');
+                registerForm.classList.remove('active');
+                checkGoogleLogin();
+            } else {
+                loginTab.classList.remove('active');
+                registerTab.classList.add('active');
+                loginForm.classList.remove('active');
+                registerForm.classList.add('active');
+                checkGoogleLoginRegister();
+            }
+        }
+
+        // Login form submission
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/api/users/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+                if (data.token) {
+                    localStorage.setItem('userToken', data.token);
+                    alert(data.message || 'Login successful!');
+                    window.location.href = `${redirect}.html`;
+                } else {
+                    alert(data.error || 'Invalid login credentials');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Login failed!');
+            }
+        });
+
+        // Register form submission
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+
+            try {
+                const response = await fetch('/api/users/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+                const data = await response.json();
+                if (data.message) {
+                    localStorage.setItem('userToken', data.token);
+                    alert(data.message);
+                    window.location.href = `${redirect}.html`;
+                } else {
+                    alert(data.error || 'Registration failed');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Registration failed!');
+            }
+        });
+
+        // Google Login Integration (Simplified example using hypothetical gapi)
+        function checkGoogleLogin() {
+            const googleAccounts = document.getElementById('googleAccounts');
+            googleAccounts.innerHTML = '';
+            if (typeof gapi !== 'undefined' && gapi.auth2) {
+                gapi.load('auth2', () => {
+                    gapi.auth2.init({
+                        client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com'
+                    }).then(auth2 => {
+                        const googleUser = auth2.currentUser.get();
+                        if (googleUser) {
+                            const profile = googleUser.getBasicProfile();
+                            const accountBtn = document.createElement('button');
+                            accountBtn.className = 'google-account';
+                            accountBtn.textContent = profile.getEmail();
+                            accountBtn.onclick = () => {
+                                fetch('/api/users/google-login', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ token: googleUser.getAuthResponse().id_token })
+                                })
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data.token) {
+                                        localStorage.setItem('userToken', data.token);
+                                        alert('Login successful with Google!');
+                                        window.location.href = `${redirect}.html`;
+                                    } else {
+                                        alert(data.error || 'Google login failed');
+                                    }
+                                })
+                                .catch(err => {
+                                    console.error(err);
+                                    alert('Google login failed!');
+                                });
+                            };
+                            googleAccounts.appendChild(accountBtn);
+                        } else {
+                            document.getElementById('googleLoginBtn').style.display = 'block';
+                        }
+                    });
+                });
+            } else {
+                document.getElementById('googleLoginBtn').style.display = 'block';
+            }
+        }
+
+        function checkGoogleLoginRegister() {
+            const googleAccountsRegister = document.getElementById('googleAccountsRegister');
+            googleAccountsRegister.innerHTML = '';
+            if (typeof gapi !== 'undefined' && gapi.auth2) {
+                gapi.load('auth2', () => {
+                    gapi.auth2.init({
+                        client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com'
+                    }).then(auth2 => {
+                        const googleUser = auth2.currentUser.get();
+                        if (googleUser) {
+                            const profile = googleUser.getBasicProfile();
+                            const accountBtn = document.createElement('button');
+                            accountBtn.className = 'google-account';
+                            accountBtn.textContent = profile.getEmail();
+                            accountBtn.onclick = () => {
+                                fetch('/api/users/google-register', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ token: googleUser.getAuthResponse().id_token })
+                                })
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data.token) {
+                                        localStorage.setItem('userToken', data.token);
+                                        alert('Registration successful with Google!');
+                                        window.location.href = `${redirect}.html`;
+                                    } else {
+                                        alert(data.error || 'Google registration failed');
+                                    }
+                                })
+                                .catch(err => {
+                                    console.error(err);
+                                    alert('Google registration failed!');
+                                });
+                            };
+                            googleAccountsRegister.appendChild(accountBtn);
+                        } else {
+                            document.getElementById('googleLoginBtnRegister').style.display = 'block';
+                        }
+                    });
+                });
+            } else {
+                document.getElementById('googleLoginBtnRegister').style.display = 'block';
+            }
+        }
+
+        document.getElementById('googleLoginBtn').addEventListener('click', () => {
+            checkGoogleLogin();
+        });
+
+        document.getElementById('googleLoginBtnRegister').addEventListener('click', () => {
+            checkGoogleLoginRegister();
+        });
+
+        window.addEventListener('load', () => {
+            switchTab('login');
+            checkGoogleLogin();
+            // Apply saved theme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+        });
+    </script>
+    <script src="https://apis.google.com/js/platform.js?onload=init" async defer></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'936b767e1e01b085',t:'MTc0NTcyNjk1MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
+</html>

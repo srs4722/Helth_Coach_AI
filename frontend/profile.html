@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Health Coach AI - User Profile Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Roboto', 'Arial', sans-serif;
+            margin: 0;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #1c2526, #2e3b3e);
+            color: #e0e0e0;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #ffffff, #f5f7fa);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            min-height: 60px;
+            padding: 0 20px;
+        }
+
+        body.dark-mode .navbar {
+            background: linear-gradient(135deg, #2e3b3e, #1c2526);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        #logo-section {
+            display: flex;
+            align-items: center;
+        }
+
+        #main-logo {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+            transform: scale(7.5);
+            transform-origin: left center;
+            margin-top: 35px;
+            margin-left: -85px;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #0288d1;
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        body.dark-mode nav a {
+            color: #4fc3f7;
+        }
+
+        nav a:hover, nav a.active {
+            color: #ffffff;
+            background: #0288d1;
+        }
+
+        body.dark-mode nav a:hover, body.dark-mode nav a.active {
+            background: #4fc3f7;
+            color: #1c2526;
+        }
+
+        .tooltip {
+            position: relative;
+        }
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 10;
+        }
+        .error {
+            color: #e53e3e;
+            font-size: 0.875rem;
+            display: none;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0288d1;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .message-box {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        .message-box.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message-box.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        #dark-mode-btn {
+            display: none;
+        }
+
+    </style>
+</head>
+<body class="bg-gradient-to-br from-[#e0f7fa] to-[#b2ebf2] min-h-screen flex flex-col">
+    <header class="navbar">
+        <div class="logo" id="logo-section">
+            <img src="assets/images/LOGO.png" alt="Health Coach AI Logo" id="main-logo">
+        </div> 
+        <nav>
+            <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="food-log.html"><i class="fas fa-utensils"></i> Food Log</a>
+            <a href="chat.html"><i class="fas fa-robot"></i> AI Coach</a>
+            <a href="workouts.html"><i class="fas fa-dumbbell card-icon"></i> Workouts</a>
+            <a href="#"><i class="fas fa-file-pdf"></i> Download PDF</a>
+        </nav>
+        <a href="#" id="dark-mode-btn"><i class="fas fa-moon"></i> Dark Mode</a>
+    </header>    
+
+    <main class="flex-grow flex items-center justify-center p-4">
+        <div class="max-w-2xl w-full bg-[#FFFFFF] rounded-lg shadow-lg p-6 relative">
+            <div id="spinner" class="spinner"></div>
+            <h1 class="text-2xl font-bold text-center text-[#0288d1] mb-4">Health Coach AI - User Profile Setup</h1>
+            <p class="text-center text-[#666] mb-6">Please fill out the form below to create your personalized health profile.</p>
+
+            <form id="userProfileForm" class="space-y-6">
+                <!-- Personal Information -->
+                <div class="border-t border-[#ddd] pt-4">
+                    <h2 class="text-lg font-semibold text-[#0288d1]">Personal Information</h2>
+                    <div class="mt-4 space-y-4">
+                        <div>
+                            <label for="fullName" class="block text-sm font-medium text-[#666]">Full Name <span class="text-red-500">*</span></label>
+                            <input type="text" id="fullName" name="fullName" required class="mt-1 block w-full border-[#ddd] rounded-md bg-[#f5f5f5] text-[#333] focus:border-[#0288d1] focus:ring-[#0288d1] p-2 shadow-sm">
+                            <p class="error" id="fullNameError">Please enter your full name.</p>
+                        </div>
+                        <div>
+                            <label for="dateOfBirth" class="block text-sm font-medium text-[#666]">Date of Birth <span class="text-red-500">*</span></label>
+                            <input type="date" id="dateOfBirth" name="dateOfBirth" required class="mt-1 block w-full border-[#ddd] rounded-md bg-[#f5f5f5] text-[#333] focus:border-[#0288d1] focus:ring-[#0288d1] p-2 shadow-sm">
+                        </div>
+                        <div>
+                            <label for="nationality" class="block text-sm font-medium text-[#666]">Nationality <span class="text-red-500">*</span></label>
+                            <input type="text" id="nationality" name="nationality" required class="mt-1 block w-full border-[#ddd] rounded-md bg-[#f5f5f5] text-[#333] focus:border-[#0288d1] focus:ring-[#0288d1] p-2 shadow-sm" placeholder="e.g., Indian">
+                        </div>
+                        <div>
+                            <label for="gender" class="block text-sm font-medium text-[#666]">Gender <span class="text-red-500">*</span></label>
+                            <select id="gender" name="gender" required class="mt-1 block w-full border-[#ddd] rounded-md bg-[#f5f5f5] text-[#333] focus:border-[#0288d1] focus:ring-[#0288d1] p-2 shadow-sm">
+                                <option value="">Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="phoneNumber" class="block text-sm font-medium text-[#666] tooltip" data-tooltip="Enter a 10-digit phone number">Phone Number <span class="text-red-500">*</span></label>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" pattern="[0-9]{10}" required class="mt-1 block w-full border-[#ddd] rounded-md bg-[#f5f5f5] text-[#333] focus:border-[#0288d1] focus:ring-[#0288d1] p-2 shadow-sm" placeholder="e.g., 1234567890">
+                            <p class="error" id="phoneNumberError">Please enter a valid 10-digit phone number.</p>
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-[#666]">Email Address <span class="text-red-500">*</span></label>
+                            <input type="email" id="email" name="email" required class="mt-1 block w-full border-[#ddd] rounded-md bg-[#f5f5f5] text-[#333] focus:border-[#0288d1] focus:ring-[#0288d1] p-2 shadow-sm" placeholder="e.g., john.doe@example.com">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Health Details -->
+                <div class="border-t border-[#ddd] pt-4">
+                    <h2 class="text-lg font-semibold text-[#0288d1]">Health Details</h2>
+                    <div class="mt-4 space-y-4">
+                        <div>
+                            <label for="weight" class="block text-sm font-medium text-[#666] tooltip" data-tooltip="Enter weight in kilograms">Weight (kg) <span class="text-red-500">*</span></label>
+                            <input type="number" id="weight" name="weight" min="20" max="300" step="0.1" required class="mt-1 block w-full border-[#ddd] rounded-md bg-[#f5f5f5] text-[#333] focus:border-[#0288d1] focus:ring-[#0288d1] p-2 shadow-sm" placeholder="e.g., 70.5">
+                        </div>
+                        <div>
+                            <label for="height" class="block text-sm font-medium text-[#666] tooltip" data-tooltip="Enter height in centimeters">Height (cm) <span class="text-red-500">*</span></label>
+                            <input type="number" id="height" name="height" min="100" max="250" step="0.1" required class="mt-1 block w-full border-[#ddd] rounded-md bg-[#f5f5f5] text-[#333] focus:border-[#0288d1] focus:ring-[#0288d1] p-2 shadow-sm" placeholder="e.g., 170">
+                        </div>
+                        <div>
+                            <label for="bodyType" class="block text-sm font-medium text-[#666]">Body Type <span class="text-red-500">*</span></label>
+                            <select id="bodyType" name="bodyType" required class="mt-1 block w-full border-[#ddd] rounded-md bg-[#f5f5f5] text-[#333] focus:border-[#0288d1] focus:ring-[#0288d1] p-2 shadow-sm">
+                                <option value="">Select Body Type</option>
+                                <option value="ectomorph">Ectomorph</option>
+                                <option value="mesomorph">Mesomorph</option>
+                                <option value="endomorph">Endomorph</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="fitnessLevel" class="block text-sm font-medium text-[#666]">Current Fitness Level <span class="text-red-500">*</span></label>
+                            <select id="fitnessLevel" name="fitnessLevel" required class="mt-1 block w-full border-[#ddd] rounded-md bg-[#f5f5f5] text-[#333] focus:border-[#0288d1] focus:ring-[#0288d1] p-2 shadow-sm">
+                                <option value="">Select Fitness Level</option>
+                                <option value="beginner">Beginner</option>
+                                <option value="intermediate">Intermediate</option>
+                                <option value="advanced">Advanced</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Health Goals -->
+                <div class="border-t border-[#ddd] pt-4">
+                    <h2 class="text-lg font-semibold text-[#0288d1]">Health Goals</h2>
+                    <div class="mt-4 space-y-4">
+                        <div>
+                            <label for="primaryGoal" class="block text-sm font-medium text-[#666]">Primary Goal <span class="text-red-500">*</span></label>
+                            <select id="primaryGoal" name="primaryGoal" required class="mt-1 block w-full border-[#ddd] rounded-md bg-[#f5f5f5] text-[#333] focus:border-[#0288d1] focus:ring-[#0288d1] p-2 shadow-sm">
+                                <option value="">Select Primary Goal</option>
+                                <option value="weightGain">Weight Gain</option>
+                                <option value="weightLoss">Weight Loss</option>
+                                <option value="muscleGain">Muscle Gain</option>
+                                <option value="maintain">Maintain Current Weight</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-[#666]">Specific Focus Areas <span class="text-[#888]">(Select all that apply)</span></label>
+                            <div class="mt-2 space-y-2">
+                                <div>
+                                    <input type="checkbox" id="bellyFat" name="focusAreas" value="bellyFat" class="h-4 w-4 text-[#0288d1] focus:ring-[#0288d1] border-[#ddd] rounded">
+                                    <label for="bellyFat" class="ml-2 text-sm text-[#666]">Belly Fat Reduction</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="toning" name="focusAreas" value="toning" class="h-4 w-4 text-[#0288d1] focus:ring-[#0288d1] border-[#ddd] rounded">
+                                    <label for="toning" class="ml-2 text-sm text-[#666]">Toning and Sculpting</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="strength" name="focusAreas" value="strength" class="h-4 w-4 text-[#0288d1] focus:ring-[#0288d1] border-[#ddd] rounded">
+                                    <label for="strength" class="ml-2 text-sm text-[#666]">Strength Training</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="endurance" name="focusAreas" value="endurance" class="h-4 w-4 text-[#0288d1] focus:ring-[#0288d1] border-[#ddd] rounded">
+                                    <label for="endurance" class="ml-2 text-sm text-[#666]">Endurance Improvement</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="flexibility" name="focusAreas" value="flexibility" class="h-4 w-4 text-[#0288d1] focus:ring-[#0288d1] border-[#ddd] rounded">
+                                    <label for="flexibility" class="ml-2 text-sm text-[#666]">Flexibility</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Workout Preferences -->
+                <div class="border-t border-[#ddd] pt-4">
+                    <h2 class="text-lg font-semibold text-[#0288d1]">Workout Preferences</h2>
+                    <div class="mt-4 space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-[#666]">Preferred Workout Plan <span class="text-red-500">*</span></label>
+                            <div class="mt-2 space-y-2">
+                                <div>
+                                    <input type="radio" id="homeWorkout" name="workoutPlan" value="home" required class="h-4 w-4 text-[#0288d1] focus:ring-[#0288d1] border-[#ddd]">
+                                    <label for="homeWorkout" class="ml-2 text-sm text-[#666]">Home Workout</label>
+                                </div>
+                                <div>
+                                    <input type="radio" id="gymWorkout" name="workoutPlan" value="gym" class="h-4 w-4 text-[#0288d1] focus:ring-[#0288d1] border-[#ddd]">
+                                    <label for="gymWorkout" class="ml-2 text-sm text-[#666]">Gym Workout</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="workoutDays" class="block text-sm font-medium text-[#666] tooltip" data-tooltip="Enter a number between 1 and 7">How many days per week can you commit to working out? <span class="text-red-500">*</span></label>
+                            <input type="number" id="workoutDays" name="workoutDays" min="1" max="7" required class="mt-1 block w-full border-[#ddd] rounded-md bg-[#f5f5f5] text-[#333] focus:border-[#0288d1] focus:ring-[#0288d1] p-2 shadow-sm" placeholder="e.g., 4">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-[#666]">Do you have any injuries or medical conditions? <span class="text-red-500">*</span></label>
+                            <div class="mt-2 space-y-2">
+                                <div>
+                                    <input type="radio" id="medicalYes" name="medicalConditions" value="yes" required class="h-4 w-4 text-[#0288d1] focus:ring-[#0288d1] border-[#ddd]">
+                                    <label for="medicalYes" class="ml-2 text-sm text-[#666]">Yes</label>
+                                </div>
+                                <div>
+                                    <input type="radio" id="medicalNo" name="medicalConditions" value="no" class="h-4 w-4 text-[#0288d1] focus:ring-[#0288d1] border-[#ddd]">
+                                    <label for="medicalNo" class="ml-2 text-sm text-[#666]">No</label>
+                                </div>
+                            </div>
+                            <textarea id="medicalDetails" name="medicalDetails" class="mt-2 block w-full border-[#ddd] rounded-md bg-[#f5f5f5] text-[#333] focus:border-[#0288d1] focus:ring-[#0288d1] p-2 shadow-sm hidden" placeholder="If Yes, please provide details (e.g., knee injury, diabetes)"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dietary Preferences -->
+                <div class="border-t border-[#ddd] pt-4">
+                    <h2 class="text-lg font-semibold text-[#0288d1]">Dietary Preferences</h2>
+                    <div class="mt-4 space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-[#666]">Dietary Restrictions/Preferences <span class="text-[#888]">(Select all that apply)</span></label>
+                            <div class="mt-2 space-y-2">
+                                <div>
+                                    <input type="checkbox" id="vegetarian" name="dietaryPrefs" value="vegetarian" class="h-4 w-4 text-[#0288d1] focus:ring-[#0288d1] border-[#ddd] rounded">
+                                    <label for="vegetarian" class="ml-2 text-sm text-[#666]">Vegetarian</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="vegan" name="dietaryPrefs" value="vegan" class="h-4 w-4 text-[#0288d1] focus:ring-[#0288d1] border-[#ddd] rounded">
+                                    <label for="vegan" class="ml-2 text-sm text-[#666]">Vegan</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="nonVegetarian" name="dietaryPrefs" value="nonVegetarian" class="h-4 w-4 text-[#0288d1] focus:ring-[#0288d1] border-[#ddd] rounded">
+                                    <label for="nonVegetarian" class="ml-2 text-sm text-[#666]">Non-Vegetarian</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="glutenFree" name="dietaryPrefs" value="glutenFree" class="h-4 w-4 text-[#0288d1] focus:ring-[#0288d1] border-[#ddd] rounded">
+                                    <label for="glutenFree" class="ml-2 text-sm text-[#666]">Gluten-Free</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="dairyFree" name="dietaryPrefs" value="dairyFree" class="h-4 w-4 text-[#0288d1] focus:ring-[#0288d1] border-[#ddd] rounded">
+                                    <label for="dairyFree" class="ml-2 text-sm text-[#666]">Dairy-Free</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="otherDiet" name="dietaryPrefs" value="other" class="h-4 w-4 text-[#0288d1] focus:ring-[#0288d1] border-[#ddd] rounded">
+                                    <label for="otherDiet" class="ml-2 text-sm text-[#666]">Other</label>
+                                    <input type="text" id="otherDietDetails" name="otherDietDetails" class="mt-2 block w-full border-[#ddd] rounded-md bg-[#f5f5f5] text-[#333] focus:border-[#0288d1] focus:ring-[#0288d1] p-2 shadow-sm hidden" placeholder="Specify other dietary preferences (e.g., nut-free)">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="dietPlan" class="block text-sm font-medium text-[#666]">Do you follow any specific diet plan?</label>
+                            <select id="dietPlan" name="dietPlan" class="mt-1 block w-full border-[#ddd] rounded-md bg-[#f5f5f5] text-[#333] focus:border-[#0288d1] focus:ring-[#0288d1] p-2 shadow-sm">
+                                <option value="">Select Diet Plan</option>
+                                <option value="keto">Keto</option>
+                                <option value="paleo">Paleo</option>
+                                <option value="intermittentFasting">Intermittent Fasting</option>
+                                <option value="noSpecific">No Specific Plan</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <input type="text" id="otherDietPlanDetails" name="otherDietPlanDetails" class="mt-2 block w-full border-[#ddd] rounded-md bg-[#f5f5f5] text-[#333] focus:border-[#0288d1] focus:ring-[#0288d1] p-2 shadow-sm hidden" placeholder="Specify other diet plan">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Information -->
+                <div class="border-t border-[#ddd] pt-4">
+                    <h2 class="text-lg font-semibold text-[#0288d1]">Additional Information</h2>
+                    <div class="mt-4 space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-[#666]">Do you track your fitness progress (e.g., using apps, devices)? <span class="text-red-500">*</span></label>
+                            <div class="mt-2 space-y-2">
+                                <div>
+                                    <input type="radio" id="trackYes" name="trackProgress" value="yes" required class="h-4 w-4 text-[#0288d1] focus:ring-[#0288d1] border-[#ddd]">
+                                    <label for="trackYes" class="ml-2 text-sm text-[#666]">Yes</label>
+                                </div>
+                                <div>
+                                    <input type="radio" id="trackNo" name="trackProgress" value="no" class="h-4 w-4 text-[#0288d1] focus:ring-[#0288d1] border-[#ddd]">
+                                    <label for="trackNo" class="ml-2 text-sm text-[#666]">No</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="profilePicture" class="block text-sm font-medium text-[#666]">Upload Your Profile Picture <span class="text-[#888]">(Optional)</span></label>
+                            <input type="file" id="profilePicture" name="profilePicture" accept="image/*" class="mt-1 block w-full text-sm text-[#666] file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#f5f5f5] file:text-[#333] hover:file:bg-[#e0e0e0]">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="text-center">
+                    <button type="submit" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-[#0288d1] hover:bg-[#01579b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0288d1]">Submit Profile</button>
+                </div>
+                <div id="messageBox" class="message-box"></div>
+            </form>
+        </div>
+    </main>
+
+    <footer class="w-full text-center py-4 mt-auto text-[#666]">
+        <p>© 2025 Health Coach AI. All rights reserved. <a href="/cdn-cgi/l/email-protection#281b1d1818071a1c28000d09041c000b07090b000901460b0705" class="text-[#0288d1] hover:text-[#01579b]">Contact Us</a></p>
+    </footer>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script>
+        const darkModeBtn = document.getElementById('dark-mode-btn');
+        darkModeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+                darkModeBtn.innerHTML = '<i class=""></i>';
+            } else {
+                localStorage.setItem('theme', 'light');
+                darkModeBtn.innerHTML = '<i class=""></i>';
+            }
+        });
+    
+        window.addEventListener('load', () => {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                darkModeBtn.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            }
+        });
+        const previewMode = new URLSearchParams(window.location.search).get('preview') === 'true';
+        const spinner = document.getElementById('spinner');
+        const messageBox = document.getElementById('messageBox');
+        const form = document.getElementById('userProfileForm');
+
+        document.querySelectorAll('input[name="medicalConditions"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.getElementById('medicalDetails').classList.toggle('hidden', this.value !== 'yes');
+            });
+        });
+
+        document.getElementById('otherDiet').addEventListener('change', function() {
+            document.getElementById('otherDietDetails').classList.toggle('hidden', !this.checked);
+        });
+
+        document.getElementById('dietPlan').addEventListener('change', function() {
+            document.getElementById('otherDietPlanDetails').classList.toggle('hidden', this.value !== 'other');
+        });
+
+        // Check if user is logged in and auto-submit with default values
+        async function checkAndSubmitProfile() {
+            const token = localStorage.getItem('userToken');
+            if (!token) {
+                messageBox.textContent = 'Please log in or register to submit your profile.';
+                messageBox.className = 'message-box error';
+                messageBox.style.display = 'block';
+                window.location.href = 'login.html?redirect=dashboard';
+                return;
+            }
+
+            // Pre-fill the form with default values if fields are empty
+            document.getElementById('fullName').value = document.getElementById('fullName').value || "John Doe";
+            document.getElementById('dateOfBirth').value = document.getElementById('dateOfBirth').value || "1990-01-01";
+            document.getElementById('nationality').value = document.getElementById('nationality').value || "Indian";
+            document.getElementById('gender').value = document.getElementById('gender').value || "male";
+            document.getElementById('phoneNumber').value = document.getElementById('phoneNumber').value || "1234567890";
+            document.getElementById('email').value = document.getElementById('email').value || "john.doe@example.com";
+            document.getElementById('weight').value = document.getElementById('weight').value || "70";
+            document.getElementById('height').value = document.getElementById('height').value || "170";
+            document.getElementById('bodyType').value = document.getElementById('bodyType').value || "mesomorph";
+            document.getElementById('fitnessLevel').value = document.getElementById('fitnessLevel').value || "beginner";
+            document.getElementById('primaryGoal').value = document.getElementById('primaryGoal').value || "muscleGain";
+            document.querySelector('input[name="workoutPlan"][value="home"]').checked = true;
+            document.getElementById('workoutDays').value = document.getElementById('workoutDays').value || "4";
+            document.querySelector('input[name="medicalConditions"][value="no"]').checked = true;
+            document.querySelector('input[name="trackProgress"][value="yes"]').checked = true;
+
+            // Since all required fields are now filled, proceed with auto-submission
+            spinner.style.display = 'block';
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => {
+                if (key === 'focusAreas' || key === 'dietaryPrefs') {
+                    if (!data[key]) data[key] = [];
+                    data[key].push(value);
+                } else {
+                    data[key] = value;
+                }
+            });
+
+            const profilePicture = document.getElementById('profilePicture').files[0];
+            if (profilePicture) {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    data.profilePicture = e.target.result;
+                    await submitProfile(data);
+                };
+                reader.readAsDataURL(profilePicture);
+            } else {
+                await submitProfile(data);
+            }
+        }
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            spinner.style.display = 'block';
+
+            const fullName = document.getElementById('fullName').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            if (!fullName) {
+                document.getElementById('fullNameError').style.display = 'block';
+                spinner.style.display = 'none';
+                return;
+            }
+            if (!/^[0-9]{10}$/.test(phoneNumber)) {
+                document.getElementById('phoneNumberError').style.display = 'block';
+                spinner.style.display = 'none';
+                return;
+            }
+
+            const formData = new FormData(this);
+            const data = {};
+            formData.forEach((value, key) => {
+                if (key === 'focusAreas' || key === 'dietaryPrefs') {
+                    if (!data[key]) data[key] = [];
+                    data[key].push(value);
+                } else {
+                    data[key] = value;
+                }
+            });
+
+            const profilePicture = document.getElementById('profilePicture').files[0];
+            if (profilePicture) {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    data.profilePicture = e.target.result;
+                    await submitProfile(data);
+                };
+                reader.readAsDataURL(profilePicture);
+            } else {
+                await submitProfile(data);
+            }
+        });
+
+        async function submitProfile(data) {
+            if (previewMode) {
+                console.log('Preview mode: Form data:', data);
+                messageBox.textContent = 'Profile submission previewed successfully!';
+                messageBox.className = 'message-box success';
+                messageBox.style.display = 'block';
+                spinner.style.display = 'none';
+                return;
+            }
+
+            const token = localStorage.getItem('userToken');
+            if (!token) {
+                messageBox.textContent = 'Please log in or register to submit your profile.';
+                messageBox.className = 'message-box error';
+                messageBox.style.display = 'block';
+                spinner.style.display = 'none';
+                window.location.href = 'login.html?redirect=dashboard';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/users/profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    messageBox.textContent = 'Profile submitted successfully! Redirecting to your dashboard...';
+                    messageBox.className = 'message-box success';
+                    messageBox.style.display = 'block';
+                    setTimeout(() => window.location.href = 'dashboard.html', 2000);
+                } else {
+                    messageBox.textContent = result.error || 'Failed to save profile.';
+                    messageBox.className = 'message-box error';
+                    messageBox.style.display = 'block';
+                    if (result.error.includes('Token') || result.error.includes('User not found')) {
+                        localStorage.removeItem('userToken');
+                        window.location.href = 'login.html?redirect=dashboard';
+                    }
+                }
+                spinner.style.display = 'none';
+            } catch (error) {
+                console.error('Error submitting profile:', error);
+                messageBox.textContent = 'An error occurred while saving your profile. Please try again.';
+                messageBox.className = 'message-box error';
+                messageBox.style.display = 'block';
+                spinner.style.display = 'none';
+            }
+        }
+
+        // Automatically check and submit on page load
+        window.addEventListener('load', checkAndSubmitProfile);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'938cf9663d5653ff',t:'MTc0NjA3ODM0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
+</html>

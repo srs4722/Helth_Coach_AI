@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Health Coach AI - Food Log</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Reset and Base Styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background: linear-gradient(135deg, #e0f7fa, #b2ebf2); /* Match dashboard background */
+        color: #333; /* Dark text for readability */
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        font-family: Arial, sans-serif;
+    }
+
+    body.dark-mode {
+        background: linear-gradient(135deg, #1c2526, #2e3b3e);
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .food-log-header p {
+        color: #b0b0b0;
+    }
+
+    /* Navbar */
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(135deg, #ffffff, #f5f7fa);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        min-height: 60px; /* Match dashboard navbar height */
+        padding: 0 20px; /* Match dashboard padding */
+    }
+
+    body.dark-mode .navbar {
+        background: linear-gradient(135deg, #2e3b3e, #1c2526);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    #logo-section {
+        display: flex;
+        align-items: center;
+    }
+
+    #main-logo {
+        height: 40px; /* Match dashboard logo height */
+        width: auto;
+        object-fit: contain;
+        transform: scale(7.5); /* Match dashboard logo scale */
+        transform-origin: left center;
+        margin-top: 35px; /* Match dashboard margin */
+        margin-left: -85px; /* Match dashboard margin */
+    }
+
+    nav {
+        display: flex;
+        align-items: center;
+        gap: 15px; /* Match dashboard nav gap */
+        flex-wrap: wrap; /* Match dashboard nav wrap */
+    }
+
+    nav a {
+        text-decoration: none;
+        color: #0288d1; /* Match dashboard link color */
+        font-weight: 600; /* Match dashboard font weight */
+        font-size: 1rem; /* Match dashboard font size */
+        display: flex;
+        align-items: center;
+        gap: 5px; /* Match dashboard gap */
+        padding: 8px 12px; /* Match dashboard padding */
+        border-radius: 5px; /* Match dashboard border radius */
+        transition: background 0.3s, color 0.3s; /* Match dashboard transitions */
+    }
+
+    body.dark-mode nav a {
+        color: #4fc3f7; /* Match dashboard dark mode link color */
+    }
+
+    nav a:hover, nav a.active {
+        color: #ffffff; /* Match dashboard hover color */
+        background: #0288d1; /* Match dashboard hover background */
+    }
+
+    body.dark-mode nav a:hover, body.dark-mode nav a.active {
+        background: #4fc3f7; /* Match dashboard dark mode hover background */
+        color: #1c2526; /* Match dashboard dark mode hover text color */
+    }
+
+    /* Main Container */
+    .food-log-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 40px 20px;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    /* Header Section */
+    .food-log-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .food-log-header h1 {
+        font-size: 2rem;
+        color: #0288d1; /* Match dashboard accent color */
+        margin-bottom: 10px;
+    }
+
+    .food-log-header p {
+        font-size: 1rem;
+        color: #666; /* Slightly lighter for contrast */
+    }
+
+    /* Form Section - Ensure visibility and responsiveness */
+    .food-log-form {
+        background: #ffffff; /* Match dashboard card background */
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        width: 100%;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Match dashboard card shadow */
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        min-height: 300px;
+    }
+
+    .food-log-form h2 {
+        font-size: 1.5rem;
+        color: #0288d1; /* Match dashboard accent color */
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+        width: 100%;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: #666; /* Adjusted for light background */
+        font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #ddd; /* Added border for visibility */
+        border-radius: 10px;
+        background: #f5f5f5; /* Light gray input background */
+        color: #333;
+        outline: none;
+        font-size: 1rem;
+        transition: background 0.3s, border-color 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        background: #ffffff;
+        border-color: #0288d1; /* Highlight on focus */
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .quantity-group {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .quantity-group input {
+        flex: 2;
+        min-width: 150px;
+    }
+
+    .quantity-group select {
+        flex: 1;
+        min-width: 100px;
+    }
+
+    .button-group {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 15px;
+    }
+
+    .log-btn,
+    .submit-btn {
+        padding: 10px 20px;
+        background: #0288d1; /* Match dashboard accent color */
+        color: #fff;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-weight: 500;
+        transition: background 0.3s;
+    }
+
+    .log-btn:hover,
+    .submit-btn:hover {
+        background: #01579b; /* Match dashboard hover color */
+    }
+
+    /* Summary Section */
+    .food-log-summary {
+        background: #ffffff; /* Match dashboard card background */
+        padding: 25px;
+        border-radius: 15px;
+        width: 100%;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Match dashboard card shadow */
+    }
+
+    .food-log-summary h2 {
+        font-size: 1.5rem;
+        color: #0288d1; /* Match dashboard accent color */
+        margin-bottom: 20px;
+    }
+
+    #foodLogTable {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    #foodLogTable th,
+    #foodLogTable td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd; /* Adjusted for light background */
+    }
+
+    #foodLogTable th {
+        background: #f5f5f5; /* Light gray header */
+        color: #333;
+        font-weight: 600;
+    }
+
+    #foodLogTable td {
+        color: #666; /* Adjusted for light background */
+    }
+
+    .edit-btn,
+    .delete-btn {
+        background: none;
+        border: none;
+        color: #0288d1; /* Match dashboard accent color */
+        cursor: pointer;
+        margin-right: 10px;
+        transition: color 0.3s;
+    }
+
+    .delete-btn {
+        color: #ff4444;
+    }
+
+    .edit-btn:hover {
+        color: #01579b; /* Match dashboard hover color */
+    }
+
+    .delete-btn:hover {
+        color: #cc0000;
+    }
+
+    .totals-section {
+        background: #f5f5f5; /* Light gray for contrast */
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 20px;
+    }
+
+    .totals-section h3 {
+        font-size: 1.2rem;
+        color: #0288d1; /* Match dashboard accent color */
+        margin-bottom: 10px;
+    }
+
+    .totals-section p {
+        margin: 5px 0;
+        color: #666; /* Adjusted for light background */
+    }
+
+    .totals-section span {
+        color: #333;
+        font-weight: 500;
+    }
+
+    .advice-btn {
+        padding: 10px 20px;
+        background: #0288d1; /* Match dashboard accent color */
+        color: #fff;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-weight: 500;
+        margin-top: 20px;
+        transition: background 0.3s;
+    }
+
+    .advice-btn:hover {
+        background: #01579b; /* Match dashboard hover color */
+    }
+
+    .advice-box {
+        margin-top: 20px;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .message {
+        margin-bottom: 15px;
+        padding: 10px 15px;
+        border-radius: 10px;
+        max-width: 80%;
+        line-height: 1.4;
+    }
+
+    .message.received {
+        background: #e0f7fa; /* Light blue for received messages */
+        color: #333;
+        margin-right: auto;
+    }
+
+    .message.sent {
+        background: #0288d1; /* Match dashboard accent color */
+        color: #fff;
+        margin-left: auto;
+    }
+
+    .timestamp {
+        display: block;
+        font-size: 0.75rem;
+        color: #888;
+        margin-top: 5px;
+        text-align: left;
+    }
+
+    /* Visuals Section */
+    .food-log-visuals {
+        background: #ffffff; /* Match dashboard card background */
+        padding: 25px;
+        border-radius: 15px;
+        width: 100%;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Match dashboard card shadow */
+    }
+
+    .food-log-visuals h2 {
+        font-size: 1.5rem;
+        color: #0288d1; /* Match dashboard accent color */
+        margin-bottom: 20px;
+    }
+
+    .chart-container {
+        height: 300px;
+        position: relative;
+    }
+
+    #dark-mode-btn {
+        display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="navbar">
+  <div class="logo" id="logo-section">
+    <img src="assets/images/LOGO.png" alt="Health Coach AI Logo" id="main-logo">
+  </div> 
+  <nav>
+    <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="food-log.html"><i class="fas fa-utensils"></i> Food Log</a>
+    <a href="chat.html"><i class="fas fa-robot"></i> AI Coach</a>
+    <a href="workouts.html"><i class="fas fa-dumbbell card-icon"></i> Workouts</a>
+    <a href="#"><i class="fas fa-file-pdf"></i> Download PDF</a>
+</nav>
+        <a href="#" id="dark-mode-btn"><i class="fas fa-moon"></i> Dark Mode</a>
+</header>
+
+<main class="food-log-container">
+  
+  <!-- Food Log Header -->
+  <section class="food-log-header">
+    <h1>Food Log</h1>
+    <p>Track your daily meals and get personalized nutrition advice!</p>
+  </section>
+
+  <!-- Log Meal Form -->
+  <section class="food-log-form">
+    <h2>Log Your Meal</h2>
+    <form id="foodLogForm">
+      <div class="form-group">
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date" required>
+      </div>
+      <div class="form-group">
+        <label for="mealType">Meal Type:</label>
+        <select id="mealType" name="mealType" required>
+          <option value="Breakfast">Breakfast</option>
+          <option value="Lunch">Lunch</option>
+          <option value="Dinner">Dinner</option>
+          <option value="Snack">Snack</option>
+          <option value="Custom">Custom</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="foodItem">Food Item:</label>
+        <input type="text" id="foodItem" name="foodItem" placeholder="e.g., Chicken Breast" required>
+      </div>
+      <div class="form-group quantity-group">
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="quantity" placeholder="e.g., 200" required>
+        <select id="unit" name="unit">
+          <option value="g">grams</option>
+          <option value="oz">ounces</option>
+          <option value="cup">cups</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="calories">Calories:</label>
+        <input type="number" id="calories" name="calories" placeholder="e.g., 200" required>
+      </div>
+      <div class="form-group">
+        <label for="protein">Protein (g):</label>
+        <input type="number" id="protein" name="protein" placeholder="e.g., 30">
+      </div>
+      <div class="form-group">
+        <label for="carbs">Carbs (g):</label>
+        <input type="number" id="carbs" name="carbs" placeholder="e.g., 40">
+      </div>
+      <div class="form-group">
+        <label for="fats">Fats (g):</label>
+        <input type="number" id="fats" name="fats" placeholder="e.g., 10">
+      </div>
+      <div class="form-group">
+        <label for="notes">Notes:</label>
+        <textarea id="notes" name="notes" placeholder="e.g., Cooked with olive oil"></textarea>
+      </div>
+      <div class="button-group">
+        <button type="submit" class="log-btn">
+          <i class="fas fa-plus-circle"></i> Log Food
+        </button>
+        <button type="submit" class="submit-btn">Submit Food Log</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Daily Summary -->
+  <section class="food-log-summary">
+    <h2>Daily Summary</h2>
+    <table id="foodLogTable">
+      <thead>
+        <tr>
+          <th>Time/Date</th>
+          <th>Meal Type</th>
+          <th>Food Item</th>
+          <th>Quantity</th>
+          <th>Calories</th>
+          <th>Protein (g)</th>
+          <th>Carbs (g)</th>
+          <th>Fats (g)</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="foodLogBody"></tbody>
+    </table>
+    <div class="totals-section">
+      <h3>Totals</h3>
+      <p>Total Calories: <span id="totalCalories">0</span> kcal</p>
+      <p>Total Protein: <span id="totalProtein">0</span> g</p>
+      <p>Total Carbs: <span id="totalCarbs">0</span> g</p>
+      <p>Total Fats: <span id="totalFats">0</span> g</p>
+    </div>
+    <button id="getAdviceBtn" class="advice-btn">
+      <i class="fas fa-lightbulb"></i> Get Advice
+    </button>
+    <div id="adviceBox" class="advice-box"></div>
+  </section>
+
+  <!-- Nutrition Chart -->
+  <section class="food-log-visuals">
+    <h2>Nutrition Breakdown</h2>
+    <div class="chart-container">
+      <canvas id="nutritionChart"></canvas>
+    </div>
+  </section>
+
+</main>
+
+<!-- Script Section -->
+<script>
+  const darkModeBtn = document.getElementById('dark-mode-btn');
+        darkModeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+                darkModeBtn.innerHTML = '<i class=""></i>';
+            } else {
+                localStorage.setItem('theme', 'light');
+                darkModeBtn.innerHTML = '<i class=""></i>';
+            }
+        });
+    
+        window.addEventListener('load', () => {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                darkModeBtn.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            }
+        });
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("foodLogForm");
+    const foodLogSection = document.querySelector(".food-log-form");
+    const foodLogBody = document.getElementById("foodLogBody");
+    const totalCalories = document.getElementById("totalCalories");
+    const totalProtein = document.getElementById("totalProtein");
+    const totalCarbs = document.getElementById("totalCarbs");
+    const totalFats = document.getElementById("totalFats");
+    const getAdviceBtn = document.getElementById("getAdviceBtn");
+    const adviceBox = document.getElementById("adviceBox");
+    const nutritionChartCanvas = document.getElementById("nutritionChart");
+
+    console.log("Checking elements:");
+    console.log("foodLogSection (.food-log-form):", foodLogSection ? "Found" : "Not found");
+    console.log("foodLogForm (#foodLogForm):", form ? "Found" : "Not found");
+    console.log("foodLogBody (#foodLogBody):", foodLogBody ? "Found" : "Not found");
+    console.log("nutritionChartCanvas (#nutritionChart):", nutritionChartCanvas ? "Found" : "Not found");
+
+    if (!foodLogSection) {
+      console.error("The 'Log Your Meal' section is not found. Check the HTML file.");
+    }
+    if (!form) {
+      console.error("The form element #foodLogForm is not found. Check the HTML file.");
+    }
+
+    let totals = { calories: 0, protein: 0, carbs: 0, fats: 0 };
+
+    let chart = new Chart(nutritionChartCanvas, {
+      type: "pie",
+      data: {
+        labels: ["Protein", "Carbs", "Fats"],
+        datasets: [{
+          data: [0, 0, 0],
+          backgroundColor: ["#ff6384", "#36a2eb", "#ffcd56"],
+          borderColor: "#ffffff",
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: "bottom",
+            labels: {
+              color: "#333", /* Adjusted for light background */
+              font: {
+                size: 14
+              }
+            }
+          },
+          title: {
+            display: true,
+            text: "Nutrition Breakdown (kcal)",
+            color: "#333", /* Adjusted for light background */
+            font: {
+              size: 16
+            },
+            padding: {
+              top: 10,
+              bottom: 20
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                let label = context.label || '';
+                if (label) {
+                  label += ': ';
+                }
+                label += Math.round(context.parsed) + ' kcal';
+                return label;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    function updateChart() {
+      const proteinKcal = totals.protein * 4;
+      const carbsKcal = totals.carbs * 4;
+      const fatsKcal = totals.fats * 9;
+      chart.data.datasets[0].data = [proteinKcal, carbsKcal, fatsKcal];
+      chart.update();
+      console.log("Chart updated with:", { proteinKcal, carbsKcal, fatsKcal });
+    }
+
+    // Fetch Previous Logs
+    (async () => {
+      try {
+        const res = await fetch("/api/food/log");
+        const logs = await res.json();
+        logs.forEach(log => {
+          addRow(log);
+          totals.calories += parseInt(log.calories) || 0;
+          totals.protein += parseInt(log.protein) || 0;
+          totals.carbs += parseInt(log.carbs) || 0;
+          totals.fats += parseInt(log.fats) || 0;
+        });
+        updateTotals();
+        updateChart();
+      } catch (err) {
+        console.error("Failed to fetch logs", err);
+      }
+    })();
+
+    function addRow(data) {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${data.timestamp || new Date().toLocaleString()}</td>
+        <td>${data.mealType}</td>
+        <td>${data.foodItem}</td>
+        <td>${data.quantity} ${data.unit}</td>
+        <td>${data.calories}</td>
+        <td>${data.protein || 0}</td>
+        <td>${data.carbs || 0}</td>
+        <td>${data.fats || 0}</td>
+        <td>
+          <button class="edit-btn"><i class="fas fa-edit"></i></button>
+          <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
+        </td>`;
+      foodLogBody.appendChild(row);
+    }
+
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
+      console.log("Submitting data:", data);
+
+      try {
+        const response = await fetch("/api/food/log", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
+        }
+
+        const result = await response.json();
+        console.log("Server response:", result);
+
+        data.timestamp = new Date().toLocaleString();
+        addRow(data);
+
+        totals.calories += parseInt(data.calories) || 0;
+        totals.protein += parseInt(data.protein) || 0;
+        totals.carbs += parseInt(data.carbs) || 0;
+        totals.fats += parseInt(data.fats) || 0;
+        updateTotals();
+        updateChart();
+        form.reset();
+      } catch (err) {
+        console.error("Error submitting food log:", err.message);
+        alert(`Failed to log food. Please try again. Error: ${err.message}`);
+      }
+    });
+
+    function updateTotals() {
+      totalCalories.textContent = totals.calories;
+      totalProtein.textContent = totals.protein;
+      totalCarbs.textContent = totals.carbs;
+      totalFats.textContent = totals.fats;
+    }
+
+    getAdviceBtn.addEventListener("click", async () => {
+      try {
+        const res = await fetch("/api/chat/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: `Analyze my food log: ${JSON.stringify(totals)}` })
+        });
+        const { response } = await res.json();
+        showAdvice(response || "No advice received.");
+      } catch (err) {
+        showAdvice("Failed to get advice. Try again later.");
+      }
+    });
+
+    function showAdvice(text) {
+      adviceBox.innerHTML = `<div class="message received"><p>${text}</p></div>`;
+    }
+
+    foodLogBody.addEventListener("click", (e) => {
+      const row = e.target.closest("tr");
+      if (!row) return;
+
+      if (e.target.closest(".delete-btn")) {
+        const calories = parseInt(row.cells[4].textContent) || 0;
+        const protein = parseInt(row.cells[5].textContent) || 0;
+        const carbs = parseInt(row.cells[6].textContent) || 0;
+        const fats = parseInt(row.cells[7].textContent) || 0;
+        totals.calories -= calories;
+        totals.protein -= protein;
+        totals.carbs -= carbs;
+        totals.fats -= fats;
+        updateTotals();
+        updateChart();
+        row.remove();
+      } else if (e.target.closest(".edit-btn")) {
+        alert("Edit functionality coming soon!");
+      }
+    });
+  });
+</script>
+
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'938ccef57d15bd54',t:'MTc0NjA3NjYwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

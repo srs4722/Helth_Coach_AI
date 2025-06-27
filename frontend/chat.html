@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Coach AI - Chat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+    
+        body.dark-mode {
+            background: linear-gradient(135deg, #1c2526, #2e3b3e);
+            color: #e0e0e0;
+        }
+    
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #ffffff, #f5f7fa);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            min-height: 60px;
+            padding: 0 20px;
+        }
+    
+        body.dark-mode .navbar {
+            background: linear-gradient(135deg, #2e3b3e, #1c2526);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+    
+        #logo-section {
+            display: flex;
+            align-items: center;
+        }
+    
+        #main-logo {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+            transform: scale(7.5);
+            transform-origin: left center;
+            margin-top: 35px;
+            margin-left: -85px;
+        }
+    
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+    
+        nav a {
+            text-decoration: none;
+            color: #0288d1;
+            font-weight: 600;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: color 0.3s, background 0.3s;
+        }
+    
+        body.dark-mode nav a {
+            color: #4fc3f7;
+        }
+    
+        nav a:hover {
+            color: #ffffff;
+            background: #0288d1;
+        }
+    
+        body.dark-mode nav a:hover {
+            background: #4fc3f7;
+            color: #1c2526;
+        }
+    
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+    
+        .chat-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+    
+        .chat-header h1 {
+            font-size: 2rem;
+            color: #0288d1;
+            margin-bottom: 10px;
+        }
+    
+        body.dark-mode .chat-header h1 {
+            color: #4fc3f7;
+        }
+    
+        .chat-header p {
+            font-size: 1rem;
+            color: #666;
+        }
+    
+        body.dark-mode .chat-header p {
+            color: #b0b0b0;
+        }
+    
+        .chat-box {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 20px;
+            width: 100%;
+            flex: 1;
+            max-height: 60vh;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+    
+        body.dark-mode .chat-box {
+            background: #2e3b3e;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+    
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 10px;
+            max-width: 80%;
+            line-height: 1.4;
+        }
+    
+        .message.received {
+            background: #e0f7fa;
+            color: #333;
+            margin-right: auto;
+        }
+    
+        body.dark-mode .message.received {
+            background: #3a4a4d;
+            color: #e0e0e0;
+        }
+    
+        .message.sent {
+            background: #0288d1;
+            color: #fff;
+            margin-left: auto;
+        }
+    
+        body.dark-mode .message.sent {
+            background: #4fc3f7;
+            color: #1c2526;
+        }
+    
+        .timestamp {
+            display: block;
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 5px;
+            text-align: left;
+        }
+    
+        body.dark-mode .timestamp {
+            color: #999;
+        }
+    
+        .chat-input {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 15px;
+        }
+    
+        body.dark-mode .chat-input {
+            background: #3a4a4d;
+        }
+    
+        .message-input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            background: #ffffff;
+            color: #333;
+            outline: none;
+            font-size: 1rem;
+        }
+    
+        body.dark-mode .message-input {
+            background: #2e3b3e;
+            border-color: #4fc3f7;
+            color: #e0e0e0;
+        }
+    
+        .send-btn {
+            padding: 10px 20px;
+            background: #0288d1;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+    
+    
+        .send-btn:hover {
+            background: #01579b;
+        }
+
+        #dark-mode-btn {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo" id="logo-section">
+            <img src="assets/images/LOGO.png" alt="Health Coach AI Logo" id="main-logo">
+        </div> 
+        <nav>
+            <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="food-log.html"><i class="fas fa-utensils"></i> Food Log</a>
+            <a href="chat.html"><i class="fas fa-robot"></i> AI Coach</a>
+            <a href="workouts.html"><i class="fas fa-dumbbell card-icon"></i> Workouts</a>
+            <a href="#"><i class="fas fa-file-pdf"></i> Download PDF</a>
+        </nav>
+        <a href="#" id="dark-mode-btn"><i class="fas fa-moon"></i> Dark Mode</a>
+    </header>
+
+    <main class="chat-container">
+        <section class="chat-header">
+            <h1>Chat with Your AI Coach</h1>
+            <p>Get personal advice on workouts, diet, and more based on your profile!</p>
+        </section>
+
+        <section class="chat-box" id="chatBox">
+        </section>
+
+        <section class="chat-input">
+            <input type="text" placeholder="Type your message..." class="message-input" id="messageInput">
+            <button class="send-btn" id="sendButton"><i class="fas fa-paper-plane"></i> Send</button>
+        </section>
+    </main>
+
+    <script>
+        const darkModeBtn = document.getElementById('dark-mode-btn');
+        darkModeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+                darkModeBtn.innerHTML = '<i class=""></i>';
+            } else {
+                localStorage.setItem('theme', 'light');
+                darkModeBtn.innerHTML = '<i class=""></i>';
+            }
+        });
+    
+        window.addEventListener('load', () => {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                darkModeBtn.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            }
+        });
+        document.addEventListener('DOMContentLoaded', async () => {
+            const chatBox = document.getElementById('chatBox');
+            const messageInput = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendButton');
+
+            function addMessage(content, type) {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', type);
+                const messageContent = document.createElement('p');
+                messageContent.textContent = content;
+                const timestamp = document.createElement('span');
+                timestamp.classList.add('timestamp');
+                timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                messageDiv.appendChild(messageContent);
+                messageDiv.appendChild(timestamp);
+                chatBox.appendChild(messageDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+
+            try {
+                const response = await fetch('/api/users/profile', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch user profile: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Profile response:', data);
+
+                const userName = data.name || data.username || data.firstName || 'User';
+                addMessage(`Hello, ${userName}! How can I assist you today with your muscle gain goals?`, 'received');
+            } catch (error) {
+                console.error('Error fetching user profile:', error);
+                addMessage('Hello, User! How can I assist you today with your muscle gain goals?', 'received');
+            }
+
+            async function sendMessage() {
+                const message = messageInput.value.trim();
+                if (!message) return;
+
+                addMessage(message, 'sent');
+                messageInput.value = '';
+
+                try {
+                    const response = await fetch('/api/chat/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ message }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to get response from the server');
+                    }
+
+                    const data = await response.json();
+                    addMessage(data.response, 'received');
+                } catch (error) {
+                    console.error('Error sending message:', error);
+                    addMessage('Sorry, there was an error processing your request.', 'received');
+                }
+            }
+
+            sendButton.addEventListener('click', sendMessage);
+            messageInput.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

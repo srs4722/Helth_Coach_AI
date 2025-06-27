@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Coach AI - Workouts</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+
+        
+        body.dark-mode {
+            background: linear-gradient(135deg, #1c2526, #2e3b3e);
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .workout-header p {
+            color: #b0b0b0;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #ffffff, #f5f7fa);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            min-height: 60px; /* Updated to match dashboard.html */
+            padding: 0 20px; /* Updated to match dashboard.html */
+        }
+
+        body.dark-mode .navbar {
+            background: linear-gradient(135deg, #2e3b3e, #1c2526);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        #logo-section {
+            display: flex;
+            align-items: center;
+        }
+
+        #main-logo {
+            height: 40px; /* Updated to match dashboard.html */
+            width: auto;
+            object-fit: contain;
+            transform: scale(7.5); /* Updated to match dashboard.html */
+            transform-origin: left center;
+            margin-top: 35px; /* Updated to match dashboard.html */
+            margin-left: -85px; /* Updated to match dashboard.html */
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 15px; /* Updated to match dashboard.html */
+            flex-wrap: wrap; /* Added to match dashboard.html */
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #0288d1;
+            font-weight: 600; /* Updated to match dashboard.html */
+            font-size: 1rem; /* Updated to match dashboard.html */
+            display: flex;
+            align-items: center;
+            gap: 5px; /* Added to match dashboard.html */
+            padding: 8px 12px; /* Added to match dashboard.html */
+            border-radius: 5px; /* Added to match dashboard.html */
+            transition: background 0.3s, color 0.3s; /* Updated to match dashboard.html */
+        }
+
+        body.dark-mode nav a {
+            color: #4fc3f7; /* Added to match dashboard.html */
+        }
+
+        nav a:hover, nav a.active {
+            color: #ffffff; /* Updated to match dashboard.html */
+            background: #0288d1; /* Updated to match dashboard.html */
+        }
+
+        body.dark-mode nav a:hover, body.dark-mode nav a.active {
+            background: #4fc3f7; /* Added to match dashboard.html */
+            color: #1c2526; /* Added to match dashboard.html */
+        }
+
+        .workout-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .workout-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .workout-header h1 {
+            font-size: 2rem;
+            color: #0288d1;
+            margin-bottom: 10px;
+        }
+
+        .workout-header p {
+            font-size: 1rem;
+            color: #666;
+        }
+
+        .box {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            margin-bottom: 30px;
+        }
+
+        .workout-form h2,
+        .workout-summary h2,
+        .calories-box h2 {
+            font-size: 1.5rem;
+            color: #0288d1;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background: #f5f5f5;
+            color: #333;
+            outline: none;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            background: #ffffff;
+            border-color: #0288d1;
+        }
+
+        .form-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .form-buttons input[type="button"],
+        .form-buttons button {
+            padding: 10px 20px;
+            background: #0288d1;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+            width: 48%;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-buttons input[type="button"]:hover,
+        .form-buttons button:hover {
+            background: #01579b;
+        }
+
+        #workoutLogTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        #workoutLogTable th,
+        #workoutLogTable td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #workoutLogTable th {
+            background: #f5f5f5;
+            color: #333;
+            font-weight: 600;
+        }
+
+        #workoutLogTable td {
+            color: #666;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #ff4444;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .delete-btn:hover {
+            color: #cc0000;
+        }
+
+        #caloriesList {
+            list-style: none;
+            padding: 0;
+        }
+
+        #caloriesList li {
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .calories-total {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #0288d1;
+            text-align: right;
+        }
+        #dark-mode-btn {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo" id="logo-section">
+          <img src="assets/images/LOGO.png" alt="Health Coach AI Logo" id="main-logo">
+        </div> 
+        <nav>
+            <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="food-log.html"><i class="fas fa-utensils"></i> Food Log</a>
+            <a href="chat.html"><i class="fas fa-robot"></i> AI Coach</a>
+            <a href="workouts.html"><i class="fas fa-dumbbell card-icon"></i> Workouts</a>
+            <a href="#"><i class="fas fa-file-pdf"></i> Download PDF</a>
+        </nav>
+        <a href="#" id="dark-mode-btn"><i class="fas fa-moon"></i> Dark Mode</a>
+    </header>
+
+    <main class="workout-container">
+        <section class="workout-header">
+            <h1>Workout Log</h1>
+            <p>Track your daily workouts and stay on top of your fitness goals!</p>
+        </section>
+
+        <section class="box workout-form">
+            <h2>Log Your Workout</h2>
+            <form id="workoutLogForm">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="workoutType">Workout Type:</label>
+                    <select id="workoutType" name="workoutType" required>
+                        <option value="gym">Gym Workout</option>
+                        <option value="home">Home Workout</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="exercise">Exercise:</label>
+                    <input type="text" id="exercise" name="exercise" placeholder="e.g., Push-ups" list="exerciseList" required>
+                    <datalist id="exerciseList"></datalist>
+                </div>
+                <div class="form-group">
+                    <label for="sets">Sets:</label>
+                    <input type="number" id="sets" name="sets" placeholder="e.g., 3" required>
+                </div>
+                <div class="form-group">
+                    <label for="reps">Reps:</label>
+                    <input type="number" id="reps" name="reps" placeholder="e.g., 10" required>
+                </div>
+                <div class="form-group">
+                    <label for="duration">Duration (minutes):</label>
+                    <input type="number" id="duration" name="duration" placeholder="e.g., 30" required>
+                </div>
+                <div class="form-buttons">
+                    <input type="button" id="logWorkoutBtn" value="+Log Workout">
+                    <button type="submit" id="submitWorkoutBtn">Submit Workout</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="box workout-summary">
+            <h2>Workout History</h2>
+            <table id="workoutLogTable">
+                <thead>
+                    <tr>
+                        <th>Time/Date</th>
+                        <th>Exercise</th>
+                        <th>Sets</th>
+                        <th>Reps</th>
+                        <th>Duration (min)</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="workoutLogBody"></tbody>
+            </table>
+        </section>
+
+        <section class="box calories-box">
+            <h2>Calories Burned</h2>
+            <ul id="caloriesList"></ul>
+            <div id="caloriesTotal" class="calories-total"></div>
+        </section>
+    </main>
+
+    <script src="js/script.js"></script>
+    <script>
+        const darkModeBtn = document.getElementById('dark-mode-btn');
+        darkModeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+                darkModeBtn.innerHTML = '<i class=""></i>';
+            } else {
+                localStorage.setItem('theme', 'light');
+                darkModeBtn.innerHTML = '<i class=""></i>';
+            }
+        });
+    
+        window.addEventListener('load', () => {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                darkModeBtn.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            }
+        });
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.getElementById("workoutLogForm");
+            const workoutLogBody = document.getElementById("workoutLogBody");
+            const caloriesList = document.getElementById("caloriesList");
+            const caloriesTotal = document.getElementById("caloriesTotal");
+            const logWorkoutBtn = document.getElementById("logWorkoutBtn");
+            const exerciseInput = document.getElementById("exercise");
+            const workoutTypeSelect = document.getElementById("workoutType");
+
+            // Combined exercise lists from Gym and Home workouts
+            const gymExercises = [
+                "Barbell Bench Press", "Dumbbell Bench Press", "Incline Barbell Bench Press", "Incline Dumbbell Press",
+                "Decline Bench Press", "Double Chest Fly", "Machine Chest Press", "Pec Deck Machine", "Push-ups",
+                "Chest Dips", "Deadlift", "Pull-ups", "Chin-ups", "Lat Pulldown", "Barbell Bent-over Row",
+                "Dumbbell Row", "T-Bar Row", "Seated Cable Row", "Machine Row", "Straight-arm Pulldown",
+                "Face Pulls", "Barbell Overhead Press", "Dumbbell Shoulder Press", "Arnold Press", "Lateral Raises",
+                "Front Raises", "Rear Delt Flyes", "Barbell Upright Row", "Shrugs", "Barbell Curl", "Dumbbell Curl",
+                "Hammer Curl", "Concentration Curl", "Preacher Curl", "Spider Curl", "Cable Curl", "Incline Dumbbell Curl",
+                "Triceps Pushdown", "Overhead Triceps Extension", "Skull Crushers", "Close-grip Bench Press",
+                "Triceps Dips", "Dumbbell Kickbacks", "Rope Overhead Triceps Extension", "Barbell Back Squat",
+                "Barbell Front Squat", "Goblet Squat", "Leg Press Machine", "Bulgarian Split Squat", "Walking Lunges",
+                "Step-ups", "Romanian Deadlift", "Conventional Deadlift", "Stiff-leg Deadlift", "Leg Curl Machine",
+                "Leg Extension Machine", "Hip Thrusts", "Glute Bridge", "Calf Raises", "Plank", "Sit-ups", "Crunches",
+                "Russian Twists", "Hanging Leg Raises", "Cable Woodchopper", "Decline Bench Sit-ups", "Bicycle Crunches",
+                "Mountain Climbers", "Ab Wheel Rollouts", "V-ups", "Flutter Kicks", "Treadmill Running", "Stair Climber",
+                "Stationary Bike", "Rowing Machine", "Elliptical Machine", "Jump Rope", "High-Intensity Interval Training",
+                "Battle Ropes", "Sled Push", "Kettlebell Swings", "Medicine Ball Slams", "Clean and Press", "Snatch",
+                "Thrusters", "Box Jumps", "Wall Balls", "Burpees", "Farmer's Carry", "Smith Machine Squat",
+                "Smith Machine Bench Press", "Leg Abduction Machine", "Leg Adduction Machine", "Cable Crossover",
+                "Assisted Pull-up Machine", "Hack Squat Machine"
+            ];
+
+            const homeExercises = [
+                "Push-ups", "Incline Push-ups", "Decline Push-ups", "Wide-grip Push-ups", "Diamond Push-ups",
+                "Chest Dips", "Wall Push-ups", "Superman Exercise", "Reverse Snow Angels", "Doorway Rows",
+                "Backpack Rows", "Resistance Band Rows", "Pike Push-ups", "Handstand Push-ups", "Arm Circles",
+                "Shoulder Taps", "Plank to Downward Dog", "Towel Curls", "Backpack Curls", "Isometric Bicep Hold",
+                "Resistance Band Bicep Curls", "Triceps Dips", "Triceps Extensions", "Diamond Push-ups",
+                "Bodyweight Squats", "Jump Squats", "Wall Sits", "Walking Lunges", "Reverse Lunges", "Step-ups",
+                "Bulgarian Split Squats", "Calf Raises", "Single-leg Deadlifts", "Plank", "Sit-ups", "Crunches",
+                "Leg Raises", "Bicycle Crunches", "Flutter Kicks", "Mountain Climbers", "Russian Twists", "V-ups",
+                "Hollow Body Hold", "Dead Bug Exercise", "Jumping Jacks", "High Knees", "Butt Kicks", "Burpees",
+                "Skater Jumps", "Jump Rope", "Shadow Boxing", "Bear Crawls", "Frog Jumps", "Stair Running"
+            ];
+
+            // Simple Levenshtein distance for autocorrect
+            function levenshtein(a, b) {
+                const matrix = Array(b.length + 1).fill(null).map(() => Array(a.length + 1).fill(null));
+                for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
+                for (let j = 0; j <= b.length; j++) matrix[j][0] = j;
+                for (let j = 1; j <= b.length; j++) {
+                    for (let i = 1; i <= a.length; i++) {
+                        const indicator = a[i - 1] === b[j - 1] ? 0 : 1;
+                        matrix[j][i] = Math.min(
+                            matrix[j][i - 1] + 1,
+                            matrix[j - 1][i] + 1,
+                            matrix[j - 1][i - 1] + indicator
+                        );
+                    }
+                }
+                return matrix[b.length][a.length];
+            }
+
+            function autocorrectExercise(input, exercises) {
+                const inputLower = input.toLowerCase().trim();
+                if (exercises.includes(inputLower)) return inputLower;
+                let minDistance = Infinity;
+                let closest = inputLower;
+                for (const exercise of exercises) {
+                    const distance = levenshtein(inputLower, exercise.toLowerCase());
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closest = exercise;
+                    }
+                }
+                return minDistance <= 3 ? closest : inputLower;
+            }
+
+            // Update exercise suggestions based on workout type
+            function updateExerciseSuggestions() {
+                const workoutType = workoutTypeSelect.value;
+                const exercises = workoutType === "gym" ? gymExercises : homeExercises;
+                const datalist = document.getElementById("exerciseList");
+                datalist.innerHTML = exercises.map(ex => `<option value="${ex}">`).join("");
+            }
+
+            workoutTypeSelect.addEventListener("change", updateExerciseSuggestions);
+            exerciseInput.addEventListener("input", () => {
+                const workoutType = workoutTypeSelect.value;
+                const exercises = workoutType === "gym" ? gymExercises : homeExercises;
+                const value = exerciseInput.value.trim();
+                if (!value) {
+                    updateExerciseSuggestions();
+                    return;
+                }
+                const suggestions = exercises.filter(ex => ex.toLowerCase().includes(value.toLowerCase()));
+                console.log("Suggestions for", value, ":", suggestions);
+                const datalist = document.getElementById("exerciseList");
+                datalist.innerHTML = suggestions.map(ex => `<option value="${ex}">`).join("");
+            });
+
+            // Initialize with default suggestions
+            updateExerciseSuggestions();
+
+            // Fetch Previous Workouts
+            (async () => {
+                try {
+                    const email = document.getElementById("email").value || "anonymous";
+                    console.log("Fetching workouts for email:", email);
+                    const res = await fetch("/api/workouts/log?email=" + encodeURIComponent(email));
+                    if (!res.ok) throw new Error(`Fetch error: ${res.statusText}`);
+                    const workouts = await res.json();
+                    console.log("Fetched workouts:", workouts);
+                    workouts.forEach(workout => addRow(workout));
+                } catch (err) {
+                    console.error("Failed to fetch workouts:", err);
+                }
+            })();
+
+            function calculateCalories(exercise, duration) {
+                const met = 5; // Default MET value; expand with specific values if needed
+                const weight = 70; // Assume 70 kg
+                const hours = duration / 60;
+                return Math.round(met * weight * hours);
+            }
+
+            function updateCaloriesTotal() {
+                const today = new Date().toLocaleDateString();
+                let totalCalories = 0;
+                Array.from(caloriesList.children).forEach(li => {
+                    const text = li.textContent;
+                    const dateMatch = text.match(/\d+\/\d+\/\d+/);
+                    if (dateMatch && dateMatch[0] === today) {
+                        const caloriesMatch = text.match(/(\d+) kcal$/);
+                        if (caloriesMatch) {
+                            totalCalories += parseInt(caloriesMatch[1], 10) || 0;
+                        }
+                    }
+                });
+                caloriesTotal.textContent = `Total Calories Burned Today: ${totalCalories} kcal`;
+            }
+
+            function addRow(data) {
+                console.log("Adding row with data:", data);
+                const correctedExercise = autocorrectExercise(data.exercise, workoutTypeSelect.value === "gym" ? gymExercises : homeExercises);
+                const row = document.createElement("tr");
+                const calories = calculateCalories(correctedExercise, data.duration);
+                row.innerHTML = `
+                    <td>${data.timestamp || new Date().toLocaleString()}</td>
+                    <td>${correctedExercise}</td>
+                    <td>${data.sets}</td>
+                    <td>${data.reps}</td>
+                    <td>${data.duration}</td>
+                    <td>
+                        <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
+                    </td>`;
+                row.dataset.exercise = correctedExercise;
+                workoutLogBody.appendChild(row);
+
+                const li = document.createElement("li");
+                li.innerHTML = `<span>${correctedExercise} (${data.timestamp || new Date().toLocaleString()})</span><span>${calories} kcal</span>`;
+                caloriesList.appendChild(li);
+                updateCaloriesTotal();
+            }
+
+            form.addEventListener("submit", async e => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData);
+                data.exercise = autocorrectExercise(data.exercise, workoutTypeSelect.value === "gym" ? gymExercises : homeExercises);
+                console.log("Submitting workout data:", data);
+
+                try {
+                    const response = await fetch("/api/workouts/log", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
+                    }
+
+                    const result = await response.json();
+                    console.log("Server response:", result);
+
+                    data.timestamp = new Date().toLocaleString();
+                    addRow(data);
+                } catch (err) {
+                    console.error("Error submitting workout log:", err.message);
+                    alert(`Failed to log workout. Please try again. Error: ${err.message}`);
+                }
+            });
+
+            logWorkoutBtn.addEventListener("click", () => {
+                form.reset();
+            });
+
+            workoutLogBody.addEventListener("click", (e) => {
+                const row = e.target.closest("tr");
+                if (!row) return;
+
+                if (e.target.closest(".delete-btn")) {
+                    row.remove();
+                    const exercise = row.cells[1].textContent;
+                    const timestamp = row.cells[0].textContent;
+                    const li = Array.from(caloriesList.children).find(item =>
+                        item.textContent.includes(exercise) && item.textContent.includes(timestamp)
+                    );
+                    if (li) li.remove();
+                    updateCaloriesTotal();
+                }
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'938ce5e4be0c06f8',t:'MTc0NjA3NzU0My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
+</html>

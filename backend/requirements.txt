@@ -1,0 +1,14 @@
+Flask
+Flask-Cors
+pymongo
+python-dotenv
+werkzeug
+openai
+easyocr
+Pillow
+
+requests==2.31.0
+Flask==2.3.2
+Flask-Cors==4.0.0
+pymongo==4.6.1
+python-dotenv==1.0.0
