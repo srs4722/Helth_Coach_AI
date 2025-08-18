@@ -10,7 +10,7 @@ Health Coach AI is a web application delivering personalized fitness and nutriti
 
 🛠️ Installation
 
-Clone the repository:git clone[ https://github.com/yourusername/health-coach-ai.git](https://github.com/srs4722/Helth_Coach_AI)
+Clone the repository:git clone[ https://github.com/srs4722/health-coach-ai.git](https://github.com/srs4722/Helth_Coach_AI)
 cd health-coach-ai
 
 
@@ -52,3 +52,4 @@ Open a pull request.
 MIT License
 🌟 Support
 Star the repo to support development!
+
